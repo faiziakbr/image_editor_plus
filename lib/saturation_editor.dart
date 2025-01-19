@@ -18,6 +18,7 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
   double _defaultValue = 1.0; // Initial saturation value (1.0 = no change)
   double _minValue = -100;
   double _maxValue = 100;
+  bool _isLoading = false;
 
   // ColorAdjustFilter? _selectedFilter;
   List<ColorAdjustFilter> filters = [
@@ -46,14 +47,22 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              if (mounted) Navigator.pop(context);
+            },
             icon: const Icon(Icons.arrow_back_ios_new_sharp,
                 color: Colors.white)),
         actions: [
           IconButton(
               onPressed: () async {
+                setState(() {
+                  _isLoading = true;
+                });
                 final updatedImage =
                     await _getModifiedImage(widget.image, filters);
+                setState(() {
+                  _isLoading = false;
+                });
                 if (mounted) Navigator.pop(context, updatedImage);
               },
               icon: const Icon(
@@ -62,7 +71,7 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
               ))
         ],
       ),
-      body: Column(
+      body: _isLoading ? const Center(child: CircularProgressIndicator()) : Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
