@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image/image.dart' as img;
+import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'dart:ui' as ui;
 
 class ColorAdjustmentEditor extends StatefulWidget {
@@ -21,10 +21,10 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
 
   // ColorAdjustFilter? _selectedFilter;
   List<ColorAdjustFilter> filters = [
-    ColorAdjustFilter("saturation", 1, 0, 2),
-    ColorAdjustFilter("hue", 0, -100, 100),
-    ColorAdjustFilter("brightness", 0, -1, 1),
-    ColorAdjustFilter("contrast", 0, -1, 1),
+    ColorAdjustFilter("Saturation", 1, 0, 2),
+    ColorAdjustFilter("Hue", 0, -100, 100),
+    ColorAdjustFilter("Brightness", 0, -1, 1),
+    ColorAdjustFilter("Contrast", 0, -1, 1),
   ];
   int _selectedFilterIndex = 0;
 
@@ -39,8 +39,16 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Color Adjustment'),
+        title:
+            const Text('Color Adjust', style: TextStyle(color: Colors.white)),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.arrow_back_ios_new_sharp,
+                color: Colors.white)),
         actions: [
           IconButton(
               onPressed: () async {
@@ -48,7 +56,10 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
                     await _getModifiedImage(widget.image, filters);
                 if (mounted) Navigator.pop(context, updatedImage);
               },
-              icon: const Icon(Icons.check))
+              icon: const Icon(
+                Icons.check,
+                color: Colors.white,
+              ))
         ],
       ),
       body: Column(
@@ -64,29 +75,45 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
             ),
           ),
           SizedBox(
-            height: 100,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: filters.length,
-                itemBuilder: (context, index) {
-                  final filter = filters[index];
-                  return TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _defaultValue = filter.value;
-                          _selectedFilterIndex = index;
-                          _minValue = filter.minValue;
-                          _maxValue = filter.maxValue;
-                        });
-                      },
-                      child: Text(filter.name));
-                }),
-          ),
+              height: 100,
+              child: MultiSelectContainer(
+                  singleSelectedItem: true,
+                  showInListView: true,
+                  itemsDecoration:
+                      const MultiSelectDecorations(decoration: BoxDecoration()),
+                  listViewSettings:
+                      const ListViewSettings(scrollDirection: Axis.horizontal),
+                  items: filters
+                      .map((filter) => MultiSelectCard(
+                          // highlightColor: Colors.red,
+                          // splashColor: Colors.redAccent,
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 8),
+                          margin: const EdgeInsets.symmetric(horizontal: 15),
+                          textStyles: const MultiSelectItemTextStyles(
+                              textStyle: TextStyle(color: Colors.white)),
+                          decorations: MultiSelectItemDecorations(
+                              selectedDecoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10))),
+                          child: Text(filter.name),
+                          value: filter))
+                      .toList(),
+                  onChange: (allSelectedItems, selectedItem) {
+                    setState(() {
+                      final selectedObjects = selectedItem as ColorAdjustFilter;
+                      _defaultValue = selectedObjects.value;
+                      _selectedFilterIndex = filters.indexOf(selectedObjects);
+                      _minValue = selectedObjects.minValue;
+                      _maxValue = selectedObjects.maxValue;
+                    });
+                  })),
           Slider(
             value: _defaultValue,
             min: _minValue,
             max: _maxValue,
             divisions: 20,
+            activeColor: Colors.red,
             label: filters[_selectedFilterIndex].value.toStringAsFixed(2),
             onChanged: (value) {
               setState(() {
@@ -98,8 +125,8 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              '${filters[_selectedFilterIndex].name}: ${filters[_selectedFilterIndex].value.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 18),
+              '${filters[_selectedFilterIndex].name}: ${filters[_selectedFilterIndex].value.toStringAsFixed(1)}',
+              style: const TextStyle(fontSize: 18, color: Colors.white),
             ),
           ),
         ],
@@ -153,16 +180,16 @@ class _ColorAdjustmentEditorState extends State<ColorAdjustmentEditor> {
     for (var filter in filters) {
       List<double> filterMatrix;
       switch (filter.name) {
-        case 'saturation':
+        case 'Saturation':
           filterMatrix = _createSaturationMatrix(filter.value);
           break;
-        case 'brightness':
+        case 'Brightness':
           filterMatrix = _createBrightnessMatrix(filter.value);
           break;
-        case 'hue':
+        case 'Hue':
           filterMatrix = _createHueMatrix(filter.value);
           break;
-        case 'contrast':
+        case 'Contrast':
           filterMatrix = _createContrastMatrix(filter.value);
           break;
         default:

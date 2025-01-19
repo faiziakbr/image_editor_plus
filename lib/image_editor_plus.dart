@@ -594,8 +594,8 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   BottomButton(
-                    icon: Icons.add,
-                    text: i18n("Color Adjust"),
+                    icon: Icons.water_drop,
+                    text: i18n("Adjust"),
                     onTap: () async {
                       resetTransformation();
                       var loadingScreen = showLoadingScreen(context);
@@ -619,46 +619,6 @@ class _SingleImageEditorState extends State<SingleImageEditor> {
 
                       await currentImage.load(adjustedColor);
                       setState(() {});
-
-                      // final test = img.decodeImage(currentImage.bytes);
-                      // if (test != null) {
-                      //   print("SATURATION APPLIED");
-                      //   final filteredImage = img.adjustColor(
-                      //     test, brightness: 1.5,
-                      //     contrast: 0.2,
-                      //     saturation: 0.3,
-                      //     gamma: 1.1,
-                      //     hue: 15,
-                      //   );
-                      //
-                      //   Uint8List uint8list =
-                      //       Uint8List.fromList(img.encodePng(filteredImage));
-                      //
-                      //   flipValue = 0;
-                      //   rotateValue = 0;
-                      //
-                      //   await currentImage.load(uint8list).then((value) {
-                      //     print("SATURATION APPLIED $value");
-                      //   });
-                      //
-                      //   setState(() {});
-                      // }
-
-                      // EmojiLayerData? layer = await showModalBottomSheet(
-                      //   context: context,
-                      //   backgroundColor: Colors.black,
-                      //   builder: (BuildContext context) {
-                      //     return const Emojies();
-                      //   },
-                      // );
-                      //
-                      // if (layer == null) return;
-                      //
-                      // undoLayers.clear();
-                      // removedLayers.clear();
-                      // layers.add(layer);
-                      //
-                      // setState(() {});
                     },
                   ),
                   if (widget.cropOption != null)
